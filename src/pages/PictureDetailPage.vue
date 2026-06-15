@@ -47,6 +47,20 @@
               {{ formatSize(picture.picSize) }}
             </a-descriptions-item>
 
+            <a-descriptions-item label="主色调">
+              <a-space>
+                {{ picture.picColor ?? '-' }}
+                <div
+                  v-if="picture.picColor"
+                  :style="{
+                    width: '16px',
+                    height: '16px',
+                    backgroundColor: toHexColor(picture.picColor),
+                  }"
+                />
+              </a-space>
+            </a-descriptions-item>
+
             <!-- 审核信息区域：仅管理员可见 -->
             <template v-if="isAdmin">
               <a-descriptions-item label="审核状态">
@@ -72,6 +86,9 @@
               <template #icon>
                 <DownloadOutlined />
               </template>
+            </a-button>
+            <a-button :icon="h(ShareAltOutlined)" type="primary" ghost @click="doShare">
+              分享
             </a-button>
             <a-button v-if="canEdit" :icon="h(EditOutlined)" type="default" @click="doEdit">
               编辑
@@ -99,6 +116,8 @@
         </a-card>
       </a-col>
     </a-row>
+
+    <ShareModal ref="shareModalRef" :link="shareLink" />
   </div>
 </template>
 
@@ -111,10 +130,16 @@ import {
   listPictureByPageUsingPost,
 } from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
-import { DeleteOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons-vue'
+import {
+  DeleteOutlined,
+  DownloadOutlined,
+  EditOutlined,
+  ShareAltOutlined,
+} from '@ant-design/icons-vue'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import { useRouter } from 'vue-router'
-import { downloadImage, formatSize } from '@/utils'
+import { downloadImage, formatSize, toHexColor } from '@/utils'
+import ShareModal from '@/components/ShareModal.vue'
 import { PIC_REVIEW_STATUS_ENUM, PIC_REVIEW_STATUS_MAP } from '../constants/picture.ts'
 import dayjs from 'dayjs'
 
@@ -252,6 +277,17 @@ const handleReview = async (reviewStatus: number, reviewMessage: string) => {
     }
   } catch (e: any) {
     message.error('审核操作失败：' + e.message)
+  }
+}
+// ----- 分享操作 ----
+const shareModalRef = ref()
+// 分享链接
+const shareLink = ref<string>()
+// 分享
+const doShare = () => {
+  shareLink.value = `${window.location.protocol}//${window.location.host}/picture/${picture.value.id}`
+  if (shareModalRef.value) {
+    shareModalRef.value.openModal()
   }
 }
 </script>

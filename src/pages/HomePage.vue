@@ -95,6 +95,11 @@ onMounted(() => {
   fetchData()
 })
 
+const onPageChange = (page: number, pageSize: number) => {
+  searchParams.current = page
+  searchParams.pageSize = pageSize
+  fetchData()
+}
 // 搜索
 const doSearch = () => {
   // 重置搜索条件
