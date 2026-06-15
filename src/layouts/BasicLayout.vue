@@ -4,6 +4,7 @@
       <a-layout-header class="header">
         <GlobalHeader />
       </a-layout-header>
+
       <a-layout>
         <GlobalSider class="sider" />
         <a-layout-content class="content">
@@ -22,6 +23,7 @@
 
 <script setup lang="ts">
 import GlobalHeader from '@/components/GlobalHeader.vue'
+import GlobalSider from '@/components/GlobalSider.vue'
 </script>
 
 <style scoped>
@@ -43,8 +45,19 @@ import GlobalHeader from '@/components/GlobalHeader.vue'
   border-inline-end: none !important;
 }
 
+#basicLayout .sider {
+  background: #fff;
+  border-right: 0.5px solid #eee;
+  padding-top: 20px;
+}
+
+#basicLayout :deep(.ant-menu-root) {
+  border-bottom: none !important;
+  border-inline-end: none !important;
+}
+
 #basicLayout .content {
-  padding: 28px;
+  padding: 20px;
   background: linear-gradient(to right, #fefefe, #fff);
   margin-bottom: 28px;
 }
