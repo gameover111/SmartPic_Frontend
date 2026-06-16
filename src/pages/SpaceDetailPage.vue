@@ -49,7 +49,7 @@
         取消选中 (已选 {{ selectedPictures.length }} 张)
       </a-button>
     </a-flex>
-
+    <div style="margin-bottom: 12px" />
     <!-- 图片列表 -->
     <!-- <PictureList :dataList="dataList" :loading="loading" :showOp="true" :onReload="fetchData" /> -->
     <PictureList
