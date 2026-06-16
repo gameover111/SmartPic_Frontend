@@ -16,7 +16,7 @@
     <a-layout-sider
       v-if="loginUserStore.loginUser.id"
       v-model:collapsed="collapsed"
-      width="200"
+      width="180"
       :collapsible="true"
       :trigger="null"
       collapsed-width="64"
@@ -108,8 +108,8 @@ const doMenuClick = ({ key }) => {
 /* 控制折叠按钮悬浮在侧边栏右边缘外侧 */
 .sider-trigger-wrapper {
   position: absolute;
-  top: 12px;
-  right: -32px; /* 负值使其超出侧边栏右侧边缘线 */
+  top: -20px;
+  right: -24px; /* 负值使其超出侧边栏右侧边缘线 */
   z-index: 1001;
 }
 
@@ -122,8 +122,8 @@ const doMenuClick = ({ key }) => {
   border-radius: 0 4px 4px 0; /* 只留右边的圆角 */
   box-shadow: 2px 0 8px rgba(24, 144, 255, 0.12); /* ✨ 带有一点点蓝色的高级悬浮阴影 */
 
-  height: 32px;
-  width: 32px;
+  height: 24px;
+  width: 24px;
   padding: 0;
   display: flex;
   justify-content: center;

@@ -2,7 +2,15 @@
   <div id="pictureManagePage">
     <a-flex justify="space-between">
       <h2>图片管理</h2>
-      <a-space>
+      <a-space wrap>
+        <!-- 图片批量编辑操作 -->
+        <a-button type="primary" :disabled="selectedRowKeys.length === 0" @click="doBatchEdit">
+          批量编辑 (已选 {{ selectedRowKeys.length }} 项)
+        </a-button>
+        <a-button v-if="selectedRowKeys.length > 0" type="dashed" danger @click="clearSelection">
+          取消选择
+        </a-button>
+        <!-- ------------- -->
         <a-button type="primary" href="/add_picture" target="_blank">+ 创建图片</a-button>
         <a-button type="primary" href="/add_picture/batch" target="_blank" ghost
           >+ 批量创建图片</a-button
@@ -46,15 +54,19 @@
     </a-form>
     <div style="margin-bottom: 16px" />
     <!-- 表格 -->
+    <!-- 批量操作选择按钮 -->
     <a-table
       :columns="columns"
       :data-source="dataList"
       :pagination="pagination"
+      :row-selection="rowSelection"
+      :preserveSelectedRowKeys="true"
+      row-key="id"
       @change="doTableChange"
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'url'">
-          <a-image :src="record.url" :width="120" />
+          <a-image :src="record.url" :width="80" />
         </template>
         <template v-if="column.dataIndex === 'tags'">
           <a-space wrap>
@@ -109,6 +121,13 @@
         </template>
       </template>
     </a-table>
+    <!-- 批量编辑弹窗 -->
+    <BatchEditPictureModal
+      ref="batchEditPictureModalRef"
+      :spaceId="null"
+      :pictureList="selectedPictures"
+      :onSuccess="onBatchEditSuccess"
+    />
   </div>
 </template>
 <script lang="ts" setup>
@@ -125,6 +144,8 @@ import {
   PIC_REVIEW_STATUS_OPTIONS,
 } from '../../constants/picture.ts'
 import dayjs from 'dayjs'
+// ==================== 【新加：引入弹窗组件】====================
+import BatchEditPictureModal from '@/components/BatchEditPictureModal.vue'
 
 const columns = [
   {
@@ -273,4 +294,63 @@ const handleReview = async (record: API.Picture, reviewStatus: number) => {
     message.error('审核操作失败，' + res.data.message)
   }
 }
+
+// ==================== 【新加：表格多选及弹窗联动逻辑】====================
+// 存储表格勾选的纯 ID 数组
+const selectedRowKeys = ref<string[] | number[]>([])
+// 存储表格勾选的完整对象数组（提供给弹窗）
+const selectedPictures = ref<API.PictureVO[]>([])
+
+// 注册表格的多选配置项
+const rowSelection = computed(() => {
+  return {
+    selectedRowKeys: selectedRowKeys.value,
+    // 关键点：改用 onSelect 和 onSelectAll，避开 onChange 在换页时的清空 Bug
+    onSelect: (record: any, selected: boolean) => {
+      const set = new Set(selectedRowKeys.value)
+      if (selected) {
+        set.add(record.id)
+      } else {
+        set.delete(record.id)
+      }
+      selectedRowKeys.value = Array.from(set)
+      selectedPictures.value = selectedRowKeys.value.map((id) => ({ id })) as any
+    },
+    onSelectAll: (selected: boolean, selectedRows: any[], changeRows: any[]) => {
+      const set = new Set(selectedRowKeys.value)
+      changeRows.forEach((row) => {
+        if (selected) {
+          set.add(row.id)
+        } else {
+          set.delete(row.id)
+        }
+      })
+      selectedRowKeys.value = Array.from(set)
+      selectedPictures.value = selectedRowKeys.value.map((id) => ({ id })) as any
+    },
+  }
+})
+
+// 清空当前的选择状态
+const clearSelection = () => {
+  selectedRowKeys.value = []
+  selectedPictures.value = []
+}
+
+// 弹窗组件实例引用
+const batchEditPictureModalRef = ref()
+
+// 打开批量编辑弹窗
+const doBatchEdit = () => {
+  if (batchEditPictureModalRef.value) {
+    batchEditPictureModalRef.value.openModal()
+  }
+}
+
+// 批量编辑成功后的回调
+const onBatchEditSuccess = () => {
+  fetchData() // 刷新当前页数据
+  clearSelection() // 清空多选状态
+}
+// =======================================================================
 </script>

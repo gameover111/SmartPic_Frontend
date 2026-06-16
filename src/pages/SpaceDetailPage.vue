@@ -8,6 +8,7 @@
           + 创建图片
         </a-button>
         <a-button :icon="h(EditOutlined)" @click="doBatchEdit"> 批量编辑 </a-button>
+
         <a-tooltip
           :title="`占用空间 ${formatSize(space.totalSize)} / ${formatSize(space.maxSize)}`"
         >
@@ -24,11 +25,41 @@
     <PictureSearchForm :onSearch="onSearch" />
     <div style="margin-bottom: 16px" />
     <!-- 按颜色搜索，跟其他搜索条件独立 -->
-    <a-form-item label="按颜色搜索">
+    <!-- <a-form-item label="按颜色搜索">
       <color-picker format="hex" @pureColorChange="onColorChange" />
-    </a-form-item>
+    </a-form-item> -->
+
+    <a-flex align="center" style="gap: 16px">
+      <span style="color: rgba(0, 0, 0, 0.85); font-size: 14px; white-space: nowrap">
+        按颜色搜索：
+      </span>
+
+      <div style="display: flex; align-items: center; height: 32px">
+        <color-picker format="hex" @pureColorChange="onColorChange" />
+      </div>
+
+      <a-button
+        v-if="selectedPictures.length > 0"
+        type="dashed"
+        danger
+        size="small"
+        style="height: 32px; border-radius: 4px"
+        @click="clearSelection"
+      >
+        取消选中 (已选 {{ selectedPictures.length }} 张)
+      </a-button>
+    </a-flex>
+
     <!-- 图片列表 -->
-    <PictureList :dataList="dataList" :loading="loading" :showOp="true" :onReload="fetchData" />
+    <!-- <PictureList :dataList="dataList" :loading="loading" :showOp="true" :onReload="fetchData" /> -->
+    <PictureList
+      :dataList="dataList"
+      :loading="loading"
+      :showOp="true"
+      :onReload="fetchData"
+      v-model:selectedRows="selectedPictures"
+      :showSelect="true"
+    />
     <!-- 分页 -->
     <a-pagination
       style="text-align: right"
@@ -37,17 +68,24 @@
       :total="total"
       @change="onPageChange"
     />
-    <BatchEditPictureModal
+    <!-- 批量编辑图片 弹窗 -->
+    <!-- <BatchEditPictureModal
       ref="batchEditPictureModalRef"
       :spaceId="id"
       :pictureList="dataList"
+      :onSuccess="onBatchEditPictureSuccess"
+    /> -->
+    <BatchEditPictureModal
+      ref="batchEditPictureModalRef"
+      :spaceId="id"
+      :pictureList="effectivePictureList"
       :onSuccess="onBatchEditPictureSuccess"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { h, onMounted, ref } from 'vue'
+import { h, onMounted, ref, computed } from 'vue'
 import { getSpaceVoByIdUsingGet } from '@/api/spaceController.ts'
 import { message } from 'ant-design-vue'
 import {
@@ -168,8 +206,16 @@ const onColorChange = async (color: string) => {
 const batchEditPictureModalRef = ref()
 
 // 批量编辑图片成功
+// const onBatchEditPictureSuccess = () => {
+//   fetchData()
+// }
+
+// 批量编辑图片成功后的回调
 const onBatchEditPictureSuccess = () => {
+  // 1. 刷新列表数据
   fetchData()
+  // 2. 关键：成功后清空勾选状态，避免留在页面上干扰下次操作
+  selectedPictures.value = []
 }
 
 // 打开批量编辑图片弹窗
@@ -178,6 +224,33 @@ const doBatchEdit = () => {
     batchEditPictureModalRef.value.openModal()
   }
 }
+
+// ==================== 【新加的清空逻辑】====================
+/**
+ * 清空所有已选中的图片
+ */
+const clearSelection = () => {
+  selectedPictures.value = []
+  message.info('已取消所有选中图片')
+}
+// ==========================================================
+
+// --------- 批量选择与编辑逻辑 --------
+
+// 存储用户手动勾选的图片对象数组
+const selectedPictures = ref<API.PictureVO[]>([])
+
+/**
+ * 核心计算属性：
+ * 如果用户勾选了，就返回勾选的图片；
+ * 如果没有勾选，默认返回当前页面的所有图片 dataList
+ */
+const effectivePictureList = computed(() => {
+  if (selectedPictures.value && selectedPictures.value.length > 0) {
+    return selectedPictures.value
+  }
+  return dataList.value
+})
 </script>
 
 <style scoped>
