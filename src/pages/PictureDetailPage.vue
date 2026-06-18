@@ -93,7 +93,7 @@
             <a-button v-if="canEdit" :icon="h(EditOutlined)" type="default" @click="doEdit">
               编辑
             </a-button>
-            <a-button v-if="canEdit" :icon="h(DeleteOutlined)" danger @click="doDelete">
+            <a-button v-if="canDelete" :icon="h(DeleteOutlined)" danger @click="doDelete">
               删除
             </a-button>
 
@@ -137,9 +137,11 @@ import {
   ShareAltOutlined,
 } from '@ant-design/icons-vue'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
+
 import { useRouter } from 'vue-router'
 import { downloadImage, formatSize, toHexColor } from '@/utils'
 import ShareModal from '@/components/ShareModal.vue'
+import { SPACE_PERMISSION_ENUM } from '@/constants/space.ts'
 import { PIC_REVIEW_STATUS_ENUM, PIC_REVIEW_STATUS_MAP } from '../constants/picture.ts'
 import dayjs from 'dayjs'
 
@@ -151,23 +153,33 @@ const props = defineProps<Props>()
 const picture = ref<API.PictureVO & Partial<API.Picture>>({}) // 扩展类型，兼容审核字段
 
 const loginUserStore = useLoginUserStore()
+// 通用权限检查函数
+function createPermissionChecker(permission: string) {
+  return computed(() => {
+    return (picture.value.permissionList ?? []).includes(permission)
+  })
+}
 
 // 判断当前登录用户是否为管理员（新增）
 const isAdmin = computed(() => {
   const loginUser = loginUserStore.loginUser
   return loginUser?.userRole === 'admin'
 })
+
 // 是否具有编辑权限
-const canEdit = computed(() => {
-  const loginUser = loginUserStore.loginUser
-  // 未登录不可编辑
-  if (!loginUser.id) {
-    return false
-  }
-  // 仅本人或管理员可编辑
-  const user = picture.value.user || {}
-  return loginUser.id === user.id || loginUser.userRole === 'admin'
-})
+// const canEdit = computed(() => {
+//   const loginUser = loginUserStore.loginUser
+//   // 未登录不可编辑
+//   if (!loginUser.id) {
+//     return false
+//   }
+//   // 仅本人或管理员可编辑
+//   const user = picture.value.user || {}
+//   return loginUser.id === user.id || loginUser.userRole === 'admin'
+// })
+// 定义权限检查
+const canEdit = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_EDIT)
+const canDelete = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_DELETE)
 // 辅助函数：获取审核状态对应的标签颜色（新增）
 const getReviewStatusColor = (status: number | undefined) => {
   const s = status ?? 0

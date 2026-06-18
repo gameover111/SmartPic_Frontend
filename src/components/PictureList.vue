@@ -49,8 +49,8 @@
             <template v-if="showOp" #actions>
               <ShareAltOutlined @click="(e) => doShare(picture, e)" />
               <SearchOutlined @click="(e) => doSearch(picture, e)" />
-              <EditOutlined @click="(e) => doEdit(picture, e)" />
-              <DeleteOutlined @click="(e) => doDelete(picture, e)" />
+              <EditOutlined v-if="canEdit" @click="(e) => doEdit(picture, e)" />
+              <DeleteOutlined v-if="canDelete" @click="(e) => doDelete(picture, e)" />
             </template>
           </a-card>
         </a-list-item>
@@ -77,6 +77,8 @@ interface Props {
   dataList?: API.PictureVO[]
   loading?: boolean
   showOp?: boolean
+  canEdit?: boolean
+  canDelete?: boolean
   onReload?: () => void
 
   // ==================== 【改动 3】====================
@@ -91,6 +93,9 @@ const props = withDefaults(defineProps<Props>(), {
   dataList: () => [],
   loading: false,
   showOp: false,
+
+  canEdit: false,
+  canDelete: false,
   // ==================== 【改动 4】====================
   // 为新加的 selectedRows 赋予默认空数组，防止未传参时报错
   selectedRows: () => [],
