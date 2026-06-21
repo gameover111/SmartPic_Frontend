@@ -158,18 +158,18 @@ const doMenuClick = ({ key }) => {
 .sider-trigger-wrapper {
   position: absolute;
   top: -20px;
-  right: -24px; /* 负值使其超出侧边栏右侧边缘线 */
+  right: -24px;
   z-index: 1001;
 }
 
-/* 🎯 核心修改：为按钮换上精致的“浅科技蓝”外观 */
+/* 折叠按钮 - 灰色风格 */
 .sider-trigger-wrapper .ant-btn {
-  background-color: #f0f7ff; /* ✨ 极浅的底色，清爽不沉闷 */
-  color: #1890ff; /* ✨ 图标使用经典的品牌蓝色 */
-  border: 1px solid #bae7ff; /* ✨ 配合浅蓝色的精致微边框 */
-  border-left: none; /* 与侧边栏无缝贴合 */
-  border-radius: 0 4px 4px 0; /* 只留右边的圆角 */
-  box-shadow: 2px 0 8px rgba(24, 144, 255, 0.12); /* ✨ 带有一点点蓝色的高级悬浮阴影 */
+  background-color: rgba(0, 0, 0, 0.03);
+  color: #666;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.06);
 
   height: 24px;
   width: 24px;
@@ -177,19 +177,43 @@ const doMenuClick = ({ key }) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 0.3s; /* 丝滑的过渡动画 */
+  transition: all 0.3s;
 }
 
-/* 🎯 悬浮反馈：鼠标放上去时颜色稍微加深一点点 */
 .sider-trigger-wrapper .ant-btn:hover {
-  background-color: #e6f7ff;
-  color: #096dd9;
-  border-color: #91d5ff;
+  background-color: rgba(0, 0, 0, 0.06);
+  color: #333;
+  border-color: rgba(0, 0, 0, 0.15);
 }
 
-/* 优化菜单顶部间距 */
+/* 侧边栏菜单样式优化 */
 :deep(.ant-menu-inline) {
   padding-top: 16px;
-  border-trailing-width: 0;
+  border-inline-end: none !important;
+}
+
+:deep(.ant-menu-item) {
+  border-radius: 8px;
+  margin: 2px 8px;
+  transition: all 0.25s ease;
+}
+
+:deep(.ant-menu-item:hover) {
+  background: rgba(0, 0, 0, 0.04) !important;
+  color: #333 !important;
+}
+
+:deep(.ant-menu-item-selected) {
+  background: rgba(0, 0, 0, 0.06) !important;
+  color: #333 !important;
+  font-weight: 500;
+}
+
+:deep(.ant-menu-item-group-title) {
+  font-size: 12px;
+  color: #aaa;
+  padding: 12px 16px 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 </style>

@@ -29,6 +29,12 @@
               <template #overlay>
                 <a-menu>
                   <a-menu-item>
+                    <router-link to="/user/profile">
+                      <UserOutlined />
+                      个人信息
+                    </router-link>
+                  </a-menu-item>
+                  <a-menu-item>
                     <router-link to="/my_space">
                       <UserOutlined />
                       我的空间
@@ -157,12 +163,47 @@ const doLogout = async () => {
 }
 
 .title {
-  color: black;
   font-size: 18px;
   margin-left: 16px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #555, #333);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .logo {
-  height: 48px;
+  height: 40px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#globalHeader .user-login-status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+#globalHeader :deep(.ant-avatar) {
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s;
+}
+
+#globalHeader :deep(.ant-avatar:hover) {
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
+#globalHeader :deep(.ant-menu-horizontal) {
+  border-bottom: none;
+  line-height: 62px;
+}
+
+#globalHeader :deep(.ant-menu-horizontal > .ant-menu-item-selected::after),
+#globalHeader :deep(.ant-menu-horizontal > .ant-menu-item:hover::after) {
+  border-bottom-color: #555 !important;
+}
+
+#globalHeader :deep(.ant-menu-horizontal > .ant-menu-item-selected) {
+  color: #555 !important;
 }
 </style>

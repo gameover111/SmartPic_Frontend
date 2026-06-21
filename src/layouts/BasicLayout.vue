@@ -29,46 +29,54 @@ import GlobalSider from '@/components/GlobalSider.vue'
 <style scoped>
 #basicLayout .header {
   padding-inline: 20px;
-  background: white;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: unset;
-  margin-bottom: 1px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 #basicLayout .sider {
-  background: #fff;
-  border-right: 0.5px solid #eee;
+  background: linear-gradient(180deg, #fafbfc 0%, #f5f5f7 100%);
+  border-right: none;
+  box-shadow: 1px 0 4px rgba(0, 0, 0, 0.03);
   padding-top: 20px;
 }
 
 #basicLayout :deep(.ant-menu-root) {
   border-bottom: none !important;
   border-inline-end: none !important;
-}
-
-#basicLayout .sider {
-  background: #fff;
-  border-right: 0.5px solid #eee;
-  padding-top: 20px;
-}
-
-#basicLayout :deep(.ant-menu-root) {
-  border-bottom: none !important;
-  border-inline-end: none !important;
+  background: transparent;
 }
 
 #basicLayout .content {
-  padding: 20px;
-  background: linear-gradient(to right, #fefefe, #fff);
-  margin-bottom: 28px;
+  padding: 24px;
+  background: linear-gradient(135deg, #fafbfc 0%, #f5f5f7 50%, #fafbfc 100%);
+  min-height: calc(100vh - 64px - 69px);
 }
 
 #basicLayout .footer {
-  background: #efefef;
+  background: linear-gradient(90deg, #f5f5f7, #fafbfc, #f5f5f7);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
   padding: 16px;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   text-align: center;
+  color: #999;
+  font-size: 13px;
+}
+
+#basicLayout .footer a {
+  color: #999;
+  transition: color 0.3s;
+}
+
+#basicLayout .footer a:hover {
+  color: #555;
 }
 </style>
